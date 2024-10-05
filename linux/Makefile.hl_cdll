@@ -3,7 +3,7 @@
 #
 #
 
-CDLL_BUILD_DIR=$(BUILD_DIR)
+CDLL_BUILD_DIR=$(BUILD_DIR)/cl_dlls
 
 HL_SRC_DIR=$(SOURCE_DIR)/cl_dll
 HL_PARTICLEMAN_DIR=$(SOURCE_DIR)/cl_dll/particleman
