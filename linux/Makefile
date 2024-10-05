@@ -80,6 +80,8 @@ TARGETS+= \
 
 build_dir:
 	-mkdir -p $(BUILD_DIR);
+	-mkdir -p $(BUILD_DIR)/cl_dlls;
+	-mkdir -p $(BUILD_DIR)/dlls;
 	cd $(BUILD_DIR)
 
 targets: $(TARGETS)

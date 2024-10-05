@@ -4,6 +4,8 @@
 # Feb 2001 by Leon Hartwig (hartwig@valvesoftware.com)
 #
 
+DLL_BUILD_DIR=$(BUILD_DIR)/dlls
+
 HLDLL_SRC_DIR=$(SOURCE_DIR)/dlls
 
 HLDLL_OBJ_DIR=$(BUILD_OBJ_DIR)/hldll
@@ -150,8 +152,8 @@ dirs:
 	-mkdir -p $(COMMON_OBJ_DIR)
 
 hl.$(SHLIBEXT): $(HLDLL_OBJS) $(PM_OBJS) $(GAME_SHARED_OBJS) $(PUBLIC_OBJS) $(COMMON_OBJS)
-	$(CPLUS) $(LDFLAGS) $(SHLIBLDFLAGS) -o $(BUILD_DIR)/$@ $(HLDLL_OBJS) $(PM_OBJS) $(GAME_SHARED_OBJS) $(PUBLIC_OBJS) $(COMMON_OBJS) $(CPP_LIB)
-	./gendbg.sh $(BUILD_DIR)/hl.$(SHLIBEXT)
+	$(CPLUS) $(LDFLAGS) $(SHLIBLDFLAGS) -o $(DLL_BUILD_DIR)/$@ $(HLDLL_OBJS) $(PM_OBJS) $(GAME_SHARED_OBJS) $(PUBLIC_OBJS) $(COMMON_OBJS) $(CPP_LIB)
+	./gendbg.sh $(DLL_BUILD_DIR)/hl.$(SHLIBEXT)
 
 $(HLDLL_OBJ_DIR)/%.o : $(HLDLL_SRC_DIR)/%.cpp
 	$(DO_CC)
