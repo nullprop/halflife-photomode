@@ -27,13 +27,12 @@ jobs:
         run: |
           cp -r linux/release/cl_dlls photomode/cl_dlls
           cp -r linux/release/dlls photomode/dlls
-          zip -r photomode.zip photomode
 
       - name: Deploy
         uses: actions/upload-artifact@v4
         with:
-          name: Linux-x86-${{ matrix.compiler }}
-          path: photomode.zip
+          name: Linux-x86-${{ matrix.compiler }}-${{ github.sha }}
+          path: photomode
 
   win32:
     name: Win32
@@ -58,11 +57,10 @@ jobs:
           copy projects\vs2019\Release\hl_cdll\client.pdb photomode\cl_dlls\client.pdb
           copy projects\vs2019\Release\hldll\hl.dll photomode\dlls\hl.dll
           copy projects\vs2019\Release\hldll\hl.pdb photomode\dlls\hl.pdb
-          zip -r photomode.zip photomode
       
       - name: Deploy
         uses: actions/upload-artifact@v4
         with:
-          name: Win32
-          path: photomode.zip
+          name: Win32-${{ github.sha }}
+          path: photomode
 
