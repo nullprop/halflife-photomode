@@ -22,17 +22,25 @@ jobs:
         run: |
           cd linux
           make COMPILER=${{ matrix.compiler }} CFG=release -j2
-      
+     
+      - name: Package
+        run: |
+          cp -r linux/release/cl_dlls photomode/cl_dlls
+          cp -r linux/release/dlls photomode/dlls
+          zip -r photomode-linux.zip photomode
+
       - name: Deploy
         uses: actions/upload-artifact@v4
         with:
-          name: Linux-x86-${{ matrix.compiler }}
-          path: |
-            linux/release/client.so
-            linux/release/client.so.dbg
-            linux/release/hl.so
-            linux/release/hl.so.dbg
-      
+          name: Linux-x86-${{ matrix.compiler }}-${{ github.sha }}
+          path: photomode
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/master'
+        with:
+          files: photomode-linux.zip
+
   win32:
     name: Win32
     runs-on: windows-latest
@@ -48,13 +56,24 @@ jobs:
       - name: Build
         run: msbuild projects/vs2019/projects.sln -t:rebuild -property:Configuration=Release -maxcpucount:2
       
+      - name: Package
+        run: |
+          mkdir photomode\cl_dlls
+          mkdir photomode\dlls
+          copy projects\vs2019\Release\hl_cdll\client.dll photomode\cl_dlls\client.dll
+          copy projects\vs2019\Release\hl_cdll\client.pdb photomode\cl_dlls\client.pdb
+          copy projects\vs2019\Release\hldll\hl.dll photomode\dlls\hl.dll
+          copy projects\vs2019\Release\hldll\hl.pdb photomode\dlls\hl.pdb
+          Compress-Archive photomode photomode-windows.zip
+      
       - name: Deploy
         uses: actions/upload-artifact@v4
         with:
-          name: Win32
-          path: |
-            projects/vs2019/Release/hl_cdll/client.dll
-            projects/vs2019/Release/hl_cdll/client.pdb
-            projects/vs2019/Release/hldll/hl.dll
-            projects/vs2019/Release/hldll/hl.pdb
-      
+          name: Win32-${{ github.sha }}
+          path: photomode
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/master'
+        with:
+          files: photomode-windows.zip

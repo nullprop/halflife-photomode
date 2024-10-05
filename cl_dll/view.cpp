@@ -21,6 +21,7 @@
 #include "Exports.h"
 
 int CL_IsThirdPerson();
+int CL_IsPhotoMode();
 void CL_CameraOffset(float* ofs);
 
 void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams);
@@ -613,24 +614,33 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 		}
 	}
 
-	// Treating cam_ofs[2] as the distance
 	if (0 != CL_IsThirdPerson())
 	{
 		Vector ofs;
-
 		ofs[0] = ofs[1] = ofs[2] = 0.0;
-
 		CL_CameraOffset((float*)&ofs);
+        VectorCopy(ofs, camAngles);
 
-		VectorCopy(ofs, camAngles);
-		camAngles[ROLL] = 0;
+        if (CL_IsPhotoMode() != 0)
+        {
+		    CL_CameraPhotoModeOffset((float*)&ofs);
+            for (i = 0; i < 3; i++)
+            {
+                pparams->vieworg[i] += ofs[i];
+            }
+        }
+        else
+        {
+            // Treating cam_ofs[ROLL] as the distance
+            camAngles[ROLL] = 0;
 
-		AngleVectors(camAngles, camForward, camRight, camUp);
+            AngleVectors(camAngles, camForward, camRight, camUp);
 
-		for (i = 0; i < 3; i++)
-		{
-			pparams->vieworg[i] += -ofs[2] * camForward[i];
-		}
+            for (i = 0; i < 3; i++)
+            {
+                pparams->vieworg[i] += -ofs[ROLL] * camForward[i];
+            }
+        }
 	}
 
 	// Give gun our viewangles
@@ -792,7 +802,7 @@ void V_CalcNormalRefdef(struct ref_params_s* pparams)
 	v_client_aimangles = pparams->cl_viewangles;
 	v_lastAngles = pparams->viewangles;
 	//	v_cl_angles = pparams->cl_viewangles;	// keep old user mouse angles !
-	if (0 != CL_IsThirdPerson())
+	if (CL_IsThirdPerson() != 0 || CL_IsPhotoMode() != 0)
 	{
 		VectorCopy(camAngles, pparams->viewangles);
 	}
@@ -1640,7 +1650,7 @@ void DLLEXPORT V_CalcRefdef(struct ref_params_s* pparams)
 	{
 		V_CalcSpectatorRefdef(pparams);
 	}
-	else if (0 == pparams->paused)
+	else if (0 == pparams->paused || CL_IsPhotoMode())
 	{
 		V_CalcNormalRefdef(pparams);
 	}
